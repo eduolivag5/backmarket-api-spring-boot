@@ -1,8 +1,12 @@
 package com.example.demo.controller;
 
+import com.example.demo.dto.ApiResponse;
 import com.example.demo.entity.Brand;
 import com.example.demo.service.BrandService;
+import org.apache.coyote.Response;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -11,35 +15,56 @@ import java.util.List;
 @RequestMapping("/brands")
 public class BrandController {
 
-    private final BrandService brandService;
-
-    public BrandController(BrandService brandService) {
-        this.brandService = brandService;
-    }
+    @Autowired
+    private BrandService brandService;
 
     /* GET */
     @GetMapping
-    public List<Brand> getBrands (@RequestParam(required = false) Integer category){
-        return brandService.getBrands(category);
+    public ResponseEntity<ApiResponse<?>> getBrands(
+            @RequestParam(required = false) Integer category) {
+
+        if (category != null) {
+            return ResponseEntity.ok(
+                    new ApiResponse<>(false, "ok",
+                            brandService.getBrandsByCategory(category))
+            );
+        }
+
+        return ResponseEntity.ok(
+                new ApiResponse<>(false, "ok", brandService.getAllBrands())
+        );
     }
 
     /* POST */
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public Brand createBrand(@RequestBody Brand brand){
-        return  brandService.createBrand(brand);
+    public ResponseEntity<ApiResponse<Brand>> createBrand(
+            @RequestBody Brand brand) {
+
+        Brand saveBrand = brandService.createBrand(brand);
+        return ResponseEntity.status(201)
+                .body(new ApiResponse<>(false, "ok", saveBrand));
     }
 
     /* PUT */
     @PutMapping
-    public void updateBrand (@RequestParam Integer id, @RequestBody Brand brand){
-        brandService.updateBrand(id, brand);
+    public ResponseEntity<ApiResponse<Brand>> updateBrand(
+            @RequestBody Brand brand) {
+
+        Brand saveBrand = brandService.updateBrand(brand);
+        return ResponseEntity.ok(
+                new ApiResponse<>(false, "ok", saveBrand)
+        );
     }
 
     /* DELETE */
     @DeleteMapping
-    public void deleteBrand (@RequestParam Integer id){
-        brandService.deleteBrand(id);
-    }
+    public ResponseEntity<ApiResponse<?>> deleteBrand(
+            @RequestParam Integer id) {
 
+        brandService.deleteBrand(id);
+        return ResponseEntity.ok(
+                new ApiResponse<>(false, "ok", null)
+        );
+    }
 }
+

@@ -11,7 +11,14 @@ public class PhoneStatus {
     private Integer id;
 
     private String estado;
-    private String descripcion;
+    private String description;
+
+    @Column(columnDefinition = "text[]")
+    private String screenTags;
+
+    @Column(columnDefinition = "text[]")
+    private String caseTags;
+
 
     /* Getters y Setters */
     public Integer getId() {
@@ -30,11 +37,27 @@ public class PhoneStatus {
         this.estado = estado;
     }
 
-    public String getDescripcion() {
-        return descripcion;
+    public String getDescription() {
+        return description;
     }
 
-    public void setDescripcion(String descripcion) {
-        this.descripcion = descripcion;
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getScreenTags() {
+        return screenTags;
+    }
+
+    public void setScreenTags(String screenTags) {
+        this.screenTags = screenTags;
+    }
+
+    public String getCaseTags() {
+        return caseTags;
+    }
+
+    public void setCaseTags(String caseTags) {
+        this.caseTags = caseTags;
     }
 }

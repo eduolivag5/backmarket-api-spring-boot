@@ -16,7 +16,7 @@ public class Price {
     private UUID id;
 
     @Column(name = "id_product", columnDefinition = "uuid")
-    private UUID idProduct;
+    private UUID productId;
 
     private Integer status;
     private Double price;
@@ -30,12 +30,12 @@ public class Price {
         this.id = id;
     }
 
-    public UUID getIdProduct() {
-        return idProduct;
+    public UUID getproductId() {
+        return productId;
     }
 
-    public void setIdProduct(UUID idProduct) {
-        this.idProduct = idProduct;
+    public void setproductId(UUID productId) {
+        this.productId = productId;
     }
 
     public Integer getStatus() {
