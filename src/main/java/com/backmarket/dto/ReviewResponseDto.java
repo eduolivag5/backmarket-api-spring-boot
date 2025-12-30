@@ -7,7 +7,7 @@ import java.util.UUID;
 
 @Setter
 @Getter
-public class ReviewResponse {
+public class ReviewResponseDto {
 
     private UUID id;
     private Double stars;
@@ -18,8 +18,8 @@ public class ReviewResponse {
     private String userName;
 
     // Constructor
-    public ReviewResponse(UUID id, Double stars, String comment, String image,
-                          UUID productId, String productNameShort, String userName) {
+    public ReviewResponseDto(UUID id, Double stars, String comment, String image,
+                             UUID productId, String productNameShort, String userName) {
         this.id = id;
         this.stars = stars;
         this.comment = comment;

@@ -8,7 +8,7 @@ import java.util.UUID;
 
 @Setter
 @Getter
-public class ProductResponse {
+public class ProductResponseDto {
 
     private UUID id;
     private String createdAt;
@@ -23,10 +23,10 @@ public class ProductResponse {
     private String[] images;
     private String[] tags;
 
-    private List<PriceResponse> prices;
+    private List<PriceResponseDto> prices;
 
     /* Constructor */
-    public ProductResponse(UUID id, String createdAt, Integer category, Integer brand, String nameShort, String name, Integer[] storages, String[] colors, String[] images, String[] tags, List<PriceResponse> prices) {
+    public ProductResponseDto(UUID id, String createdAt, Integer category, Integer brand, String nameShort, String name, Integer[] storages, String[] colors, String[] images, String[] tags, List<PriceResponseDto> prices) {
         this.id = id;
         this.createdAt = createdAt;
         this.category = category;

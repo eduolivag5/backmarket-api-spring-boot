@@ -1,9 +1,8 @@
 package com.backmarket.service;
 
-import com.backmarket.dto.PriceResponse;
-import com.backmarket.dto.ProductResponse;
+import com.backmarket.dto.PriceResponseDto;
+import com.backmarket.dto.ProductResponseDto;
 import com.backmarket.entity.Product;
-import com.backmarket.repository.PriceRepository;
 import com.backmarket.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,7 +22,7 @@ public class ProductService {
     private PriceService priceService;
 
     /* GET */
-    public List<ProductResponse> getProductsByFilters(String category, String tags) {
+    public List<ProductResponseDto> getProductsByFilters(String category, String tags) {
 
         List<Integer> categories = null;
         String[] tagArray = null;
@@ -58,7 +57,7 @@ public class ProductService {
                 .toList();
     }
 
-    public Optional<ProductResponse> getProductById(UUID id) {
+    public Optional<ProductResponseDto> getProductById(UUID id) {
         return productRepository.findById(id)
                 .map(this::mapToProductResponse);
     }
@@ -67,11 +66,11 @@ public class ProductService {
         return productRepository.findByNameOrNameShort(name, nameShort);
     }
 
-    private ProductResponse mapToProductResponse(Product product) {
-        List<PriceResponse> prices =
+    private ProductResponseDto mapToProductResponse(Product product) {
+        List<PriceResponseDto> prices =
                 priceService.getPricesByProduct(product.getId());
 
-        return new ProductResponse(
+        return new ProductResponseDto(
                 product.getId(),
                 product.getCreatedAt(),
                 product.getCategory(),

@@ -1,9 +1,14 @@
 package com.backmarket.controller;
 
-import com.backmarket.dto.ApiResponse;
-import com.backmarket.dto.ProductResponse;
+import com.backmarket.dto.ApiResponseDto;
+import com.backmarket.dto.ProductResponseDto;
 import com.backmarket.entity.Product;
 import com.backmarket.service.ProductService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +18,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @RestController
+@Tag(name="Products")
 @RequestMapping("/products")
 public class ProductController {
 
@@ -20,78 +26,124 @@ public class ProductController {
     private ProductService productService;
 
     /* GET */
-    @GetMapping()
-    public ResponseEntity<ApiResponse<?>> getProducts (
-        @RequestParam(required = false) UUID id,
-        @RequestParam(required = false) String category,
-        @RequestParam(required = false) String tags
+    @Operation(
+            summary = "Get products",
+            description = "Retrieve one or multiple products filtered by id, category, or tags."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Request completed successfully."),
+            @ApiResponse(responseCode = "404", description = "Product not found.",
+                    content = @Content),
+            @ApiResponse(responseCode = "500", description = "Internal server error.",
+                    content = @Content)
+    })
+    @GetMapping
+    public ResponseEntity<ApiResponseDto<?>> getProducts(
+            @RequestParam(required = false) UUID id,
+            @RequestParam(required = false) String category,
+            @RequestParam(required = false) String tags
     ) {
         if (id != null) {
-            return ResponseEntity.ok(new ApiResponse<>(
-                    false, "ok", productService.getProductById(id)
+            return ResponseEntity.ok(new ApiResponseDto<>(
+                    false, "OK", productService.getProductById(id)
             ));
         }
 
-        return ResponseEntity.ok(new ApiResponse<>(
-                false, "ok", productService.getProductsByFilters(category, tags)
+        return ResponseEntity.ok(new ApiResponseDto<>(
+                false, "OK", productService.getProductsByFilters(category, tags)
         ));
     }
 
-
     /* POST */
-    @PostMapping()
-    public ResponseEntity<ApiResponse<?>> createProduct (
+    @Operation(
+            summary = "Create product",
+            description = "Create a new product if it does not already exist."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Product created successfully."),
+            @ApiResponse(responseCode = "409", description = "Product already exists.",
+                    content = @Content),
+            @ApiResponse(responseCode = "500", description = "Internal server error.",
+                    content = @Content)
+    })
+    @PostMapping
+    public ResponseEntity<ApiResponseDto<?>> createProduct(
             @RequestBody Product product
     ) {
         Optional<Product> existing = productService.getProductByNameOrNameShort(
                 product.getName(),
                 product.getNameShort()
         );
+
         if (existing.isPresent()) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(new ApiResponse<>(
-                    true, "The product already exists.", null
-            ));
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(
+                    new ApiResponseDto<>(true, "Product already exists.", null)
+            );
         }
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(new ApiResponse<>(
-                false, "ok",  productService.createProduct(product)
-        ));
+        return ResponseEntity.status(HttpStatus.CREATED).body(
+                new ApiResponseDto<>(false, "OK", productService.createProduct(product))
+        );
     }
-
 
     /* PUT */
-    @PutMapping()
-    public ResponseEntity<ApiResponse<?>> updateProduct (
+    @Operation(
+            summary = "Update product",
+            description = "Update an existing product by its ID."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Product updated successfully."),
+            @ApiResponse(responseCode = "404", description = "Product not found.",
+                    content = @Content),
+            @ApiResponse(responseCode = "500", description = "Internal server error.",
+                    content = @Content)
+    })
+    @PutMapping
+    public ResponseEntity<ApiResponseDto<?>> updateProduct(
             @RequestBody Product product
     ) {
-        Optional<ProductResponse> existing = productService.getProductById(product.getId());
+        Optional<ProductResponseDto> existing =
+                productService.getProductById(product.getId());
 
         if (existing.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(new ApiResponse<>(
-                    true, "The product not exists.", null
-            ));
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(
+                    new ApiResponseDto<>(true, "Product does not exist.", null)
+            );
         }
 
-        return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse<>(
-                false, "ok",  productService.updateProduct(product)
-        ));
+        return ResponseEntity.ok(
+                new ApiResponseDto<>(false, "OK", productService.updateProduct(product))
+        );
     }
 
-
     /* DELETE */
-    @DeleteMapping()
-    public ResponseEntity<ApiResponse<?>> deleteProduct (
+    @Operation(
+            summary = "Delete product",
+            description = "Delete a product by its ID."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Product deleted successfully."),
+            @ApiResponse(responseCode = "404", description = "Product not found.",
+                    content = @Content),
+            @ApiResponse(responseCode = "500", description = "Internal server error.",
+                    content = @Content)
+    })
+    @DeleteMapping
+    public ResponseEntity<ApiResponseDto<?>> deleteProduct(
             @RequestParam UUID id
     ) {
-        Optional<ProductResponse> existing = productService.getProductById(id);
+        Optional<ProductResponseDto> existing = productService.getProductById(id);
+
         if (existing.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(new ApiResponse<>(
-                    true, "The product not exists.", null
-            ));
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(
+                    new ApiResponseDto<>(true, "Product does not exist.", null)
+            );
         }
+
         productService.deleteProduct(id);
-        return  ResponseEntity.status(HttpStatus.OK).body(new ApiResponse<>(
-                false, "ok", null
-        ));
+
+        return ResponseEntity.ok(
+                new ApiResponseDto<>(false, "OK", null)
+        );
     }
 }

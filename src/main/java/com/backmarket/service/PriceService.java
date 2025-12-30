@@ -1,6 +1,6 @@
 package com.backmarket.service;
 
-import com.backmarket.dto.PriceResponse;
+import com.backmarket.dto.PriceResponseDto;
 import com.backmarket.entity.PhoneStatus;
 import com.backmarket.entity.Price;
 import com.backmarket.repository.PhoneStatusRepository;
@@ -22,15 +22,15 @@ public class PriceService {
     private PhoneStatusRepository  phoneStatusRepository;
 
     /* GET */
-    public List<PriceResponse> getAllPrices() {
+    public List<PriceResponseDto> getAllPrices() {
         return priceRepository.findAll().stream().map(this::mapToPriceDto).toList();
     }
 
-    public Optional<PriceResponse> getPriceById(UUID id) {
+    public Optional<PriceResponseDto> getPriceById(UUID id) {
         return priceRepository.findById(id).map(this::mapToPriceDto);
     }
 
-    public List<PriceResponse> getPricesByProduct(UUID productId) {
+    public List<PriceResponseDto> getPricesByProduct(UUID productId) {
         return priceRepository.findByProductId(productId).stream().map(this::mapToPriceDto).toList();
     }
 
@@ -40,7 +40,7 @@ public class PriceService {
 
 
     /* POST */
-    public PriceResponse createPrice(Price price) {
+    public PriceResponseDto createPrice(Price price) {
         price.setId(null);
         Price savedPrice = priceRepository.save(price);
         return mapToPriceDto(savedPrice);
@@ -48,7 +48,7 @@ public class PriceService {
 
 
     /* PUT */
-    public PriceResponse updatePrice(Price price) {
+    public PriceResponseDto updatePrice(Price price) {
         Price existing = priceRepository.findById(price.getId())
                 .orElseThrow(() -> new RuntimeException("Brand not found."));
 
@@ -70,11 +70,11 @@ public class PriceService {
 
 
     /* Mapper */
-    private PriceResponse mapToPriceDto (Price price){
+    private PriceResponseDto mapToPriceDto (Price price){
         PhoneStatus phoneStatus = phoneStatusRepository.findById(price.getStatus())
                 .orElseThrow(() -> new RuntimeException("Phone status not found."));
 
-        return new PriceResponse(
+        return new PriceResponseDto(
                 price.getStatus(),
                 phoneStatus.getEstado(),
                 price.getPrice()

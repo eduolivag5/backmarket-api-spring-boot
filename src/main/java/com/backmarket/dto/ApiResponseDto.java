@@ -5,15 +5,15 @@ import lombok.Setter;
 
 @Setter
 @Getter
-public class ApiResponse<T> {
+public class ApiResponseDto<T> {
 
     private boolean error;
     private String message;
     private T data;
 
-    public ApiResponse() {}
+    public ApiResponseDto() {}
 
-    public ApiResponse(boolean error, String message, T data) {
+    public ApiResponseDto(boolean error, String message, T data) {
         this.error = error;
         this.message = message;
         this.data = data;
